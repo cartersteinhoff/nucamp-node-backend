@@ -1,11 +1,18 @@
 const express = require("express");
 const morgan = require("morgan");
+const indexRouter = require("./routes/index.js");
+const usersRouter = require("./routes/users.js");
 const campsiteRouter = require("./routes/campsiteRouter");
 const promotionRouter = require("./routes/promotionRouter");
 const partnerRouter = require("./routes/partnerRouter");
+const passport = require("passport");
+
+const hostname = "localhost";
+const port = 3000;
 
 const mongoose = require("mongoose");
-const url = "mongodb://127.0.0.1:27017/nucampsite";
+const url =
+  "mongodb+srv://carter:Bingo412$*@nucamp-primary.tlnr4rk.mongodb.net/sample_mflix";
 const connect = mongoose.connect(url, {});
 
 connect.then(
@@ -13,18 +20,20 @@ connect.then(
   (err) => console.log(err)
 );
 
-const hostname = "localhost";
-const port = 3000;
-
 const app = express();
 app.use(morgan("dev"));
 app.use(express.json());
 
-app.use("/campsites", campsiteRouter);
-app.use("/promotions", promotionRouter);
-app.use("/partner", partnerRouter);
+app.use(passport.initialize());
+
+app.use("/", indexRouter);
+app.use("/users", usersRouter);
 
 app.use(express.static(__dirname + "/public"));
+
+app.use("/campsites", campsiteRouter);
+// app.use("/promotions", promotionRouter);
+app.use("/partner", partnerRouter);
 
 app.use((req, res) => {
   res.statusCode = 200;
